@@ -9,7 +9,7 @@ import { Loading } from 'ionic-angular/components/loading/loading';
 import { makeDecorator } from '@angular/core/src/util/decorators';
 import { OrderModalComponent } from "../../components/order-modal/order-modal";
 import { GooglemapProvider } from "../../providers/googlemap/googlemap";
-import { NativeGeocoder, NativeGeocoderReverseResult} from '@ionic-native/native-geocoder';
+import { NativeGeocoder, NativeGeocoderReverseResult } from '@ionic-native/native-geocoder';
 
 //declare var google;
 declare var plugin;
@@ -30,17 +30,17 @@ export class TdropPage {
   dataRider = [];
   public loading = this.loadCtrl.create({
     content: 'Please wait the Map'
-  }) ;
-  geoloctemp ;
-  testgeodata ;
+  });
+  geoloctemp;
+  testgeodata;
   geoResult;
-  
+
   constructor(public navCtrl: NavController,
     private platform: Platform,
     public navParams: NavParams,
     public mdlCtrl: ModalController,
     public geolocation: Geolocation,
-    public nativeGeo:NativeGeocoder,
+    public nativeGeo: NativeGeocoder,
     private gmapSvc: GooglemapProvider,
     private loadCtrl: LoadingController,
     private toastCtrl: ToastController,
@@ -56,7 +56,7 @@ export class TdropPage {
     console.log('ionViewDidLoad TdropPage');
     //this.getcurrentLocation();
     // this.loadMap();
-    
+
 
   }
   initForm() {
@@ -83,7 +83,7 @@ export class TdropPage {
   }
 
   mapinit() {
-    const div = document.getElementById("mapTdrop");
+    const div = document.getElementById("mapCanvas");
     let map = plugin.google.maps.Map.getMap(div, {
       controls: {
         myLocationButton: true,
@@ -101,6 +101,7 @@ export class TdropPage {
       }
     });
     map.addEventListener(plugin.google.maps.event.MAP_READY, () => {
+      // i will take this data from service later
       const mdata = [
         {
           position: { lng: 112.6106998, lat: -7.24393739 },
@@ -118,7 +119,7 @@ export class TdropPage {
       ]
       let baseArrayClass = new plugin.google.maps.BaseArrayClass(mdata);
       baseArrayClass.map((options, cb) => {
-        
+
         options.mytitle = options.title;
         delete options.title;
         map.addMarker(options, cb);
@@ -133,13 +134,13 @@ export class TdropPage {
             htmlInfoWindow.open(marker);
           });
         });
-        
-      }); 
-      let self = this ;
+
+      });
+      let self = this;
       map.on(plugin.google.maps.event.CAMERA_MOVE_START, self.onCameraEvents);
       map.on(plugin.google.maps.event.CAMERA_MOVE, this.cekevent);
-      map.on(plugin.google.maps.event.CAMERA_MOVE_END, (latLng) =>{
-        let map = this ;
+      map.on(plugin.google.maps.event.CAMERA_MOVE_END, (latLng) => {
+        let map = this;
         self.onCameraEvents(latLng)
       });
       map.setCenter(this.mylatLng);
@@ -149,33 +150,47 @@ export class TdropPage {
   getNearRider() {
 
 
-  } 
-  cekevent(){
-    let message ="cek event touched" ;
-    this.geoloctemp = message ;
   }
-  onCameraEvents( cameraPosition){
+  cekevent() {
+    let message = "cek event touched";
+    this.geoloctemp = message;
+  }
+  onCameraEvents(cameraPosition) {
     let fields = {
       "lat": document.getElementById("lat"),
       "lng": document.getElementById("lng"),
       "latlng": document.getElementById("latlng")
     }
-  fields.lat.innerText = cameraPosition.target.lat;
-  fields.lng.innerText = cameraPosition.target.lng;
-  fields.latlng.innerText = cameraPosition.target.lat +','+ cameraPosition.target.lng;
-  let latLng = cameraPosition.target.lat +','+ cameraPosition.target.lng;
-  //this.mygeoLat = cameraPosition.target.lat;
-  //this.mygeoLng = cameraPosition.target.lng;
-  this.searchLocation(latLng);
+    fields.lat.innerText = cameraPosition.target.lat;
+    fields.lng.innerText = cameraPosition.target.lng;
+    fields.latlng.innerText = cameraPosition.target.lat + ',' + cameraPosition.target.lng;
+    let latLng = cameraPosition.target.lat + ',' + cameraPosition.target.lng;
+    // reverse geocode to get address
+    plugin.google.maps.Geocoder.geocode({
+      "position": latLng
+    }, function (results) {
+
+      if (results.length === 0) {
+        // Not found
+        return;
+      }
+
+      var address = [
+        results[0].subThoroughfare || "",
+        results[0].thoroughfare || "",
+        results[0].locality || "",
+        results[0].adminArea || "",
+        results[0].postalCode || "",
+        results[0].country || ""].join(", ");
+
+      this.presentToast(address);
+      // marker.setTitle(address)
+      //     .showInfoWindow();
+    });
   }
 
+  searchLocation(latLng) {
 
-  searchLocation(latLng){ 
-    
-    let map:any ;
-    this.testgeodata = latLng ;
-   
-   
   }
 
   showModal() {
