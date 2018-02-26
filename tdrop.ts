@@ -147,10 +147,6 @@ export class TdropPage {
     });
   }
 
-  getNearRider() {
-
-
-  }
   cekevent() {
     let message = "cek event touched";
     this.geoloctemp = message;
