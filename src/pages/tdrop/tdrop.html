@@ -1,0 +1,35 @@
+
+<!-- <ion-header>
+  <ion-navbar>
+    <ion-title>Tdrop</ion-title>
+  </ion-navbar>
+</ion-header> -->
+
+
+<ion-content delegate-handle="small" on-scroll="getScrollPosition()">
+  <!-- drivers near me -->
+  <div class="card vertical-align-content">
+		  <div #map id="mapCanvas" style="width: 100%; height: 60vh;">
+				<img src="assets/imgs/marker_to1.png" class="Absolute-Center" >
+			</div>
+		</div>
+		
+		<button ion-button block color="danger" round (click)="showModal()">selanjutnya</button>
+		<h3> this geolocation address : {{geoloctemp}}</h3>
+		<h4> this is update : {{testgeodata}}</h4>
+		<p> this is result geocode : {{geoResult}}</p>
+		<table  class="smallPanel">
+			<tr>
+					<th rowspan="2">target</th>
+					<td id="lat"></td>
+			</tr>
+			<tr>
+					<td id="lng"></td>
+			</tr>
+			<tr>
+					<th>zoom</th>
+					<td id="latlng"></td>
+			</tr>
+		
+	</table>
+</ion-content>
